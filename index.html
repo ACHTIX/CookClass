@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cooking Class with Achtix</title>
+
+    <!-- นำเข้า Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- นำเข้า Google Font 'Mali' -->
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;700&display=swap" rel="stylesheet" />
+
+    <!-- ปรับแต่งสไตล์เพิ่มเติม -->
+    <style>
+        .font-mali {
+            font-family: 'Mali', sans-serif;
+        }
+        /* ปุ่มโทนสีตามที่กำหนด พร้อมเพิ่มเงาให้เด่น */
+        .btn-custom {
+            background-color: #867878;  /* สีพื้นหลังปุ่ม */
+            color: #fbeaea;             /* สีตัวอักษรบนปุ่ม */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .btn-custom:hover {
+            background-color: #e8d8d8;
+            color: #867878;
+            box-shadow: 0 6px 8px rgba(0,0,0,0.4);
+        }
+
+        /* ปรับตำแหน่งและสไตล์ข้อความคำอธิบายให้อยู่ด้านบนตรงกลาง */
+        .step-text {
+            position: absolute;
+            top: 1rem; /* ปรับให้สูงขึ้น */
+            left: 50%;
+            transform: translateX(-50%);
+            color: #455c34;            /* อักษรสีขาว */
+            -webkit-text-stroke: 0.2px #ffffff;
+            padding: 0.25rem 1rem 0.75rem 1rem;
+            border-radius: 0.5rem;
+            /* ลบ max-width เพื่อให้พื้นหลังพอดีกับอักษร */
+            display: inline-block;
+            text-align: center;
+            white-space: pre-line;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* พื้นที่หลักสำหรับแสดงรูปพื้นหลัง */
+        .step-container {
+            width: 100%;
+            height: 100vh; /* ให้เต็มหน้าจอ */
+            background-size: contain; /* ให้เห็นรูปทั้งหมด */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* ทำให้พื้นหลังคงที่ */
+            position: relative; /* สำหรับจัดตำแหน่ง absolute ของข้อความและปุ่ม */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        /* container สำหรับปุ่มให้อยู่ตรงกลางด้านล่าง */
+        .step-button {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+
+<body class="font-mali m-0 p-0">
+<!-- โครงสร้างหลักของหน้า -->
+<div id="app" class="step-container">
+    <!-- เนื้อหา (ข้อความ/ปุ่ม) จะแสดงผลแบบ Dynamic ผ่าน JavaScript -->
+</div>
+
+<script>
+    /*
+      Array steps: รวมทุก sub-step ของทั้ง 5 ขั้นตอน (รวมหน้าเริ่มต้น)
+      แต่ละวัตถุใน steps มี:
+        bg: path ของรูปพื้นหลัง
+        text: ข้อความอธิบาย (ถ้ามี)
+        button: ข้อความบนปุ่ม
+    */
+    const steps = [
+        // (0) หน้าจอเริ่มต้น
+        {
+            bg: './asset/เริ่มต้น.png',
+            button: 'เริ่มต้น'
+        },
+
+        // ========= 1) หมักหมู =========
+        {
+            bg: './asset/(รุป)ถ้วยเปล่า.png',
+            text: 'ขั้นตอนที่ 1: หมักหมู\n(หมักหมูด้วยสมุนไพรให้รสซึม\nเข้าที่หมักอย่างน้อย 1 ชั่วโมง)',
+            button: 'เติมหมู'
+        },
+        {
+            bg: './asset/(รูป)ถ้วยที่มีเนื้อหมู.png',
+            text: '\nใส่เนื้อหมูลงไปในถ้วยแล้ว',
+            button: 'เติมสมุนไพร'
+        },
+        {
+            bg: './asset/(รูป)ถ้วยที่มีสมุนไพร + กล่องข้อความแสดงรายการสมุนไพร.png',
+            text: 'เติมสมุนไพร:\nโรสแมรี่, ไทม์, กระเทียม, น้ำมะนาว',
+            button: 'ถัดไป'
+        },
+        {
+            bg: './asset/(รูป)หมูหมัก.png',
+            text: 'หมูหมักเรียบร้อย!\n(ควรหมักอย่างน้อย 1 ชั่วโมง)',
+            button: 'ถัดไป'
+        },
+        {
+            bg: './asset/(รูป)นาฬิกาปลุก.png',
+            button: 'ถัดไป'
+        },
+
+        // ========= 2) ย่างหมู =========
+        {
+            bg: './asset/(รูป)เตาย่าง.png',
+            text: '\nขั้นตอนที่ 2: ย่างหมู\n(นำหมูที่หมักไว้ไปย่างจนสุก\nและมีสีเหลืองทอง)',
+            button: 'ใส่หมู'
+        },
+        {
+            bg: './asset/(รูป)เตาย่างมีหมู.png',
+            text: '\nหมูอยู่บนเตาแล้ว',
+            button: 'พลิก'
+        },
+        {
+            bg: './asset/(รูป)เตาย่างมีหมูเปลี่ยนสี.png',
+            text: '\nหมูเริ่มสุกเหลืองด้านหนึ่ง',
+            button: 'พลิก'
+        },
+        {
+            bg: './asset/(รูป)หมูเปลี่ยนสีในจาน.png',
+            text: 'หมูย่างเสร็จแล้ว!\nสีเหลืองทองพร้อมเสิร์ฟ',
+            button: 'ถัดไป'
+        },
+
+        // ========= 3) ทำซอสกล้วยคาราเมล =========
+        {
+            bg: './asset/(รูป)กะทะ.png',
+            text: '\nขั้นตอนที่ 3: ทำซอสกล้วยคาราเมล\n(ละลายเนยกับน้ำตาลจนเป็นคาราเมล\nจากนั้นใส่กล้วย)',
+            button: 'ใส่เนย'
+        },
+        {
+            bg: './asset/(รูป)กะทะมีเนย.png',
+            text: '\nเนยละลายในกระทะเรียบร้อย',
+            button: 'ใส่น้ำตาล'
+        },
+        {
+            bg: './asset/(รูป)กะทะมีน้ำตาล.png',
+            text: '\nน้ำตาลละลายกลายเป็นคาราเมล',
+            button: 'ใส่กล้วย'
+        },
+        {
+            bg: './asset/(รูป)กะทะมีกล้วย.png',
+            text: '\nใส่กล้วยลงในกระทะแล้ว คนให้เข้ากัน',
+            button: 'พลิก'
+        },
+        {
+            bg: './asset/(รูป)กะทะมีกล้วยเปลี่ยนสี.png',
+            text: '\nซอสกล้วยคาราเมลเริ่มเปลี่ยนสี',
+            button: 'พลิก'
+        },
+        {
+            bg: './asset/(รูป)กล้วยในจาน.png',
+            text: '\nกล้วยนุ่มและซอสข้นได้ที่แล้ว\nพร้อมเสิร์ฟ!',
+            button: 'ถัดไป'
+        },
+
+        // ========= 4) เตรียมขนมปัง =========
+        {
+            bg: './asset/(รูป)เตาอบ.png',
+            text: '\nขั้นตอนที่ 4: เตรียมขนมปัง\n(ปิ้งหรืออบขนมปัง\nให้กรอบตามชอบ)',
+            button: 'ใส่ขนมปัง'
+        },
+        {
+            bg: './asset/(รูป)เตาอบมีขนมปัง.png',
+            text: '\nขนมปังอยู่ในเตาแล้ว',
+            button: 'ถัดไป'
+        },
+        {
+            bg: './asset/(รูป)นาฬิกาปลุก (2).png',
+            button: 'ถัดไป'
+        },
+        {
+            bg: './asset/(รูป)ขนมปังบนจาน.png',
+            text: '\nขนมปังพร้อมเสิร์ฟบนจาน',
+            button: 'ถัดไป'
+        },
+
+        // ========= 5) ประกอบจาน =========
+        {
+            bg: './asset/(รูป)จานเปล่า.png',
+            text: '\n\nขั้นตอนที่ 5: ประกอบจาน\n(วางหมูย่างบนขนมปังแล้ว\nราดซอสกล้วยคาราเมลให้ทั่ว)',
+            button: 'ใส่ขนมปัง'
+        },
+        {
+            bg: './asset/(รูป)ขนมปังบนจาน.png',
+            text: '\nจานมีขนมปังแล้ว',
+            button: 'ใส่หมูย่าง'
+        },
+        {
+            bg: './asset/(รูป)จานมีขนมปังและหมูย่าง.png',
+            text: 'ขนมปัง + หมูย่างเรียบร้อย',
+            button: 'ราดซอสกล้วย'
+        },
+        {
+            bg: './asset/(รูป)จากมีขนมปังและหมูย่างพร้อมซอล.png',
+            text: 'ขนมปัง + หมูย่าง + ซอสกล้วยคาราเมล\n\nเสร็จสมบูรณ์!',
+            button: 'สำเร็จ (เริ่มใหม่)'
+        }
+    ];
+
+    let currentStep = 0;
+    const app = document.getElementById('app');
+
+    function renderStep() {
+        if (currentStep >= steps.length) {
+            currentStep = 0;
+        }
+        const step = steps[currentStep];
+        app.innerHTML = `
+        <div class="step-container" style="background-image: url('${step.bg}');">
+          <div class="step-text">
+            ${step.text ?? ''}
+          </div>
+          <div class="step-button">
+            <button id="next-btn" class="btn-custom">
+              ${step.button}
+            </button>
+          </div>
+        </div>
+      `;
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.addEventListener('click', () => {
+            if (step.button.includes('สำเร็จ')) {
+                currentStep = 0;
+            } else {
+                currentStep++;
+            }
+            renderStep();
+        });
+    }
+
+    renderStep();
+</script>
+</body>
+</html>
